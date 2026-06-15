@@ -6,9 +6,16 @@ test stubs and runnable **characterization unit tests**.
 
 ## Install
 
+`ttd` is published in the shared **claude-enterprise-standards** marketplace (hosted in the
+`zoom-pi-ftl-migration` repo), sourced from this repo's `ttd-plugin/` via a `git-subdir` entry:
+
 ```text
-/plugin marketplace add KarthikValluri-ascendion/test_cases_dbt
 /plugin install ttd@claude-enterprise-standards
+```
+
+If that marketplace isn't registered on a machine yet:
+```text
+/plugin marketplace add KarthikValluri-ascendion/zoom-pi-ftl-migration
 ```
 
 Or enable per-project in `.claude/settings.json`:
