@@ -1,0 +1,73 @@
+version: 2
+
+models:
+  - name: slv_customers
+    description: "Conformed customer enriched with nation + region."
+    columns:
+      - name: customer_key
+        data_tests: [not_null, unique]
+      - name: nation_name
+        data_tests: [not_null]
+      - name: region_name
+        data_tests: [not_null]
+
+  - name: slv_orders
+    description: "Cleaned orders, date-bounded, with readable status label."
+    columns:
+      - name: order_key
+        data_tests: [not_null, unique]
+      - name: customer_key
+        data_tests: [not_null]
+      - name: order_status_label
+        data_tests:
+          - accepted_values:
+              values: ['open', 'fulfilled', 'partial', 'unknown']
+
+  - name: slv_order_items
+    description: "Line items for in-scope orders with explicit revenue math."
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns: [order_key, line_number]
+    columns:
+      - name: order_key
+        data_tests: [not_null]
+      - name: net_amount
+        description: "extended_price * (1 - discount)"
+        data_tests:
+          - dbt_utils.accepted_range:
+              min_value: 0
+              inclusive: true
+
+unit_tests:
+  - name: ut_slv_orders_status_label_and_date_filter
+    description: "Status codes map to labels; orders before start_date are dropped."
+    model: slv_orders
+    given:
+      - input: ref('brz_orders')
+        rows:
+          - {order_key: 1, customer_key: 10, order_status: 'O', total_price: 100.00, order_date: '1998-02-01', order_priority: '1-URGENT'}
+          - {order_key: 2, customer_key: 10, order_status: 'F', total_price: 200.00, order_date: '1998-03-15', order_priority: '2-HIGH'}
+          - {order_key: 3, customer_key: 10, order_status: 'P', total_price: 300.00, order_date: '1998-04-01', order_priority: '3-MEDIUM'}
+          # Before start_date (1998-01-01) -> must be filtered out
+          - {order_key: 99, customer_key: 10, order_status: 'O', total_price: 999.00, order_date: '1997-12-31', order_priority: '1-URGENT'}
+    expect:
+      rows:
+        - {order_key: 1, order_status_label: 'open',      order_year: 1998}
+        - {order_key: 2, order_status_label: 'fulfilled', order_year: 1998}
+        - {order_key: 3, order_status_label: 'partial',   order_year: 1998}
+
+  - name: ut_slv_order_items_revenue_math
+    description: "net_amount and net_amount_with_tax computed from price/discount/tax."
+    model: slv_order_items
+    given:
+      - input: ref('brz_lineitem')
+        rows:
+          - {order_key: 1, line_number: 1, part_key: 5, quantity: 10, extended_price: 1000.00, discount: 0.10, tax: 0.05, return_flag: 'N', ship_mode: 'AIR', ship_date: '1998-02-05'}
+          - {order_key: 1, line_number: 2, part_key: 6, quantity: 2,  extended_price: 500.00,  discount: 0.00, tax: 0.00, return_flag: 'N', ship_mode: 'RAIL', ship_date: '1998-02-06'}
+      - input: ref('slv_orders')
+        rows:
+          - {order_key: 1}
+    expect:
+      rows:
+        - {order_key: 1, line_number: 1, net_amount: 900.00, net_amount_with_tax: 945.00}
+        - {order_key: 1, line_number: 2, net_amount: 500.00, net_amount_with_tax: 500.00}

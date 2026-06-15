@@ -1,0 +1,42 @@
+version: 2
+
+models:
+  - name: brz_customer
+    description: "Raw passthrough of TPC-H customer."
+    columns:
+      - name: customer_key
+        description: "Natural key from the source."
+        data_tests: [not_null, unique]
+      - name: nation_key
+        data_tests: [not_null]
+
+  - name: brz_orders
+    description: "Raw passthrough of TPC-H orders."
+    columns:
+      - name: order_key
+        data_tests: [not_null, unique]
+      - name: customer_key
+        data_tests: [not_null]
+      - name: order_status
+        data_tests:
+          - accepted_values:
+              values: ['O', 'F', 'P']
+
+  - name: brz_lineitem
+    description: "Raw passthrough of TPC-H lineitem (order_key + line_number grain)."
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns: [order_key, line_number]
+    columns:
+      - name: order_key
+        data_tests: [not_null]
+
+  - name: brz_nation
+    columns:
+      - name: nation_key
+        data_tests: [not_null, unique]
+
+  - name: brz_region
+    columns:
+      - name: region_key
+        data_tests: [not_null, unique]

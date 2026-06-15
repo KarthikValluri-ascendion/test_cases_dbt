@@ -1,0 +1,31 @@
+# AUTO-GENERATED TTD STUB -- review, then fold into the real _*__models.yml.
+# Heuristic tests only. Tighten them, then delete this banner.
+version: 2
+
+models:
+  - name: fct_high_value_orders
+    description: "TODO: describe fct_high_value_orders."
+    columns:
+      - name: order_id
+        data_tests: [not_null, unique]
+      - name: customer
+        data_tests: [not_null]
+      - name: region
+        data_tests: [not_null]
+      - name: order_date
+        data_tests: [not_null]
+      - name: revenue
+        data_tests: [not_null]
+      - name: revenue_with_tax
+        data_tests: [not_null]
+
+# unit_tests:
+#   - name: ut_fct_high_value_orders_TODO
+#     model: fct_high_value_orders
+#     given:
+#       - input: ref('TODO_upstream_model')
+#         rows:
+#           - {col: value}
+#     expect:
+#       rows:
+#         - {col: value}

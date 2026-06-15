@@ -1,0 +1,9 @@
+{
+  "profile": "dbt01",
+  "enforce": true,
+  "exempt_prefixes": [],
+  "sample_rows": 8,
+  "stub_prefix": "_ttd_stub__",
+  "unit_prefix": "_ttd_unit__",
+  "notes": "Central defaults for the TTD hook. exempt_prefixes lets you grandfather legacy model name prefixes out of the coverage gate during rollout."
+}

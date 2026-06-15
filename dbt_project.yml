@@ -1,0 +1,50 @@
+name: 'ttd'
+version: '1.0.0'
+config-version: 2
+
+# Uses the dbt01 profile from ~/.dbt/profiles.yml (account QUMTAAX-IO32337, DB01).
+profile: 'dbt01'
+
+model-paths: ["models"]
+test-paths: ["tests"]
+macro-paths: ["macros"]
+seed-paths: ["seeds"]
+snapshot-paths: ["snapshots"]
+
+target-path: "target"
+clean-targets:
+  - "target"
+  - "dbt_packages"
+
+# ---------------------------------------------------------------------------
+# TTD (Test-Then-Deploy / Test-Driven Data) enforcement hook.
+# Runs at the start of every `dbt run`/`dbt build` and aborts if any model
+# in the selected graph has zero attached tests. Disable for a single run with:
+#   dbt build --vars 'ttd_enforce: false'
+# ---------------------------------------------------------------------------
+on-run-start:
+  - "{{ ttd_enforce_coverage() }}"
+
+vars:
+  # Bounds the order/line-item volume pulled into silver+gold so the demo
+  # builds in seconds on an XS warehouse. Widen or remove for full history.
+  start_date: '1998-01-01'
+  ttd_enforce: true
+  # Models matching these prefixes are exempt from the coverage gate
+  # (e.g. pure passthrough bronze staging). Empty by default = everything enforced.
+  ttd_exempt_prefixes: []
+
+models:
+  ttd:
+    bronze:
+      +materialized: view
+      +schema: bronze
+      +tags: ["bronze"]
+    silver:
+      +materialized: view
+      +schema: silver
+      +tags: ["silver"]
+    gold:
+      +materialized: table
+      +schema: gold
+      +tags: ["gold"]

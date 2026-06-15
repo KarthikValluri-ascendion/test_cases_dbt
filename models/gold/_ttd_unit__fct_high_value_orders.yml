@@ -1,0 +1,27 @@
+# AUTO-GENERATED TTD CHARACTERIZATION UNIT TEST.
+# given = real sampled rows; expect = the model's actual output on them.
+# It locks in CURRENT behaviour: a change that alters output fails this test.
+# Review the assertions, then fold into the real _*__models.yml.
+version: 2
+
+unit_tests:
+  - name: ut_fct_high_value_orders_characterization
+    model: fct_high_value_orders
+    given:
+      - input: ref('fct_orders')
+        rows:
+          - {order_key: 2022947, customer_key: 60047, customer_name: 'Customer#000060047', market_segment: 'HOUSEHOLD', nation_name: 'BRAZIL', region_name: 'AMERICA', order_status_label: 'open', order_date: '1998-03-25', order_month: '1998-03-01', order_year: 1998, order_priority: '3-MEDIUM', total_price: 24242.05, line_item_count: 1, total_quantity: 21.0, net_revenue: 23535.98, net_revenue_with_tax: 24242.06}
+          - {order_key: 2304327, customer_key: 60047, customer_name: 'Customer#000060047', market_segment: 'HOUSEHOLD', nation_name: 'BRAZIL', region_name: 'AMERICA', order_status_label: 'open', order_date: '1998-05-13', order_month: '1998-05-01', order_year: 1998, order_priority: '5-LOW', total_price: 198799.99, line_item_count: 4, total_quantity: 136.0, net_revenue: 190767.37, net_revenue_with_tax: 198800.02}
+          - {order_key: 183333, customer_key: 60047, customer_name: 'Customer#000060047', market_segment: 'HOUSEHOLD', nation_name: 'BRAZIL', region_name: 'AMERICA', order_status_label: 'open', order_date: '1998-01-20', order_month: '1998-01-01', order_year: 1998, order_priority: '3-MEDIUM', total_price: 14805.64, line_item_count: 1, total_quantity: 10.0, net_revenue: 13837.05, net_revenue_with_tax: 14805.64}
+          - {order_key: 697988, customer_key: 60059, customer_name: 'Customer#000060059', market_segment: 'HOUSEHOLD', nation_name: 'UNITED STATES', region_name: 'AMERICA', order_status_label: 'open', order_date: '1998-02-22', order_month: '1998-02-01', order_year: 1998, order_priority: '1-URGENT', total_price: 10694.66, line_item_count: 1, total_quantity: 6.0, net_revenue: 10089.32, net_revenue_with_tax: 10694.67}
+          - {order_key: 3462850, customer_key: 60068, customer_name: 'Customer#000060068', market_segment: 'HOUSEHOLD', nation_name: 'UNITED KINGDOM', region_name: 'EUROPE', order_status_label: 'open', order_date: '1998-03-13', order_month: '1998-03-01', order_year: 1998, order_priority: '4-NOT SPECIFIED', total_price: 87151.18, line_item_count: 3, total_quantity: 49.0, net_revenue: 82842.15, net_revenue_with_tax: 87151.2}
+          - {order_key: 4767744, customer_key: 60074, customer_name: 'Customer#000060074', market_segment: 'FURNITURE', nation_name: 'ARGENTINA', region_name: 'AMERICA', order_status_label: 'open', order_date: '1998-06-13', order_month: '1998-06-01', order_year: 1998, order_priority: '1-URGENT', total_price: 214568.65, line_item_count: 4, total_quantity: 134.0, net_revenue: 207997.59, net_revenue_with_tax: 214568.67}
+          - {order_key: 1894785, customer_key: 60091, customer_name: 'Customer#000060091', market_segment: 'BUILDING', nation_name: 'RUSSIA', region_name: 'EUROPE', order_status_label: 'open', order_date: '1998-04-26', order_month: '1998-04-01', order_year: 1998, order_priority: '2-HIGH', total_price: 253350.55, line_item_count: 6, total_quantity: 185.0, net_revenue: 247911.56, net_revenue_with_tax: 253350.6}
+          - {order_key: 5792482, customer_key: 60091, customer_name: 'Customer#000060091', market_segment: 'BUILDING', nation_name: 'RUSSIA', region_name: 'EUROPE', order_status_label: 'open', order_date: '1998-02-09', order_month: '1998-02-01', order_year: 1998, order_priority: '2-HIGH', total_price: 196306.19, line_item_count: 5, total_quantity: 121.0, net_revenue: 188670.57, net_revenue_with_tax: 196306.24}
+    expect:
+      rows:
+        - {order_id: 2304327, customer: 'Customer#000060047', region: 'AMERICA', order_date: '1998-05-13', revenue: 190767.37, revenue_with_tax: 198800.02}
+        - {order_id: 3462850, customer: 'Customer#000060068', region: 'EUROPE', order_date: '1998-03-13', revenue: 82842.15, revenue_with_tax: 87151.2}
+        - {order_id: 4767744, customer: 'Customer#000060074', region: 'AMERICA', order_date: '1998-06-13', revenue: 207997.59, revenue_with_tax: 214568.67}
+        - {order_id: 1894785, customer: 'Customer#000060091', region: 'EUROPE', order_date: '1998-04-26', revenue: 247911.56, revenue_with_tax: 253350.6}
+        - {order_id: 5792482, customer: 'Customer#000060091', region: 'EUROPE', order_date: '1998-02-09', revenue: 188670.57, revenue_with_tax: 196306.24}

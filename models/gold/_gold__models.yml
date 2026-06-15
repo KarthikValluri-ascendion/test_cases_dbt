@@ -1,0 +1,49 @@
+version: 2
+
+models:
+  - name: dim_customers
+    description: "Business-facing customer dimension."
+    columns:
+      - name: customer_key
+        data_tests: [not_null, unique]
+      - name: region_name
+        data_tests: [not_null]
+
+  - name: fct_orders
+    description: "Order fact, one row per order, with rolled-up line revenue."
+    columns:
+      - name: order_key
+        data_tests: [not_null, unique]
+      - name: customer_key
+        data_tests:
+          - not_null
+          - relationships:
+              to: ref('dim_customers')
+              field: customer_key
+      - name: net_revenue
+        data_tests:
+          - dbt_utils.accepted_range:
+              min_value: 0
+              inclusive: true
+
+unit_tests:
+  - name: ut_fct_orders_rollup_and_coalesce
+    description: "Line items roll up per order; orders with no items coalesce to 0."
+    model: fct_orders
+    given:
+      - input: ref('slv_orders')
+        rows:
+          - {order_key: 1, customer_key: 10, order_status_label: 'open',      order_date: '1998-02-01', order_month: '1998-02-01', order_year: 1998, order_priority: '1-URGENT', total_price: 1400.00}
+          - {order_key: 2, customer_key: 10, order_status_label: 'fulfilled', order_date: '1998-02-02', order_month: '1998-02-01', order_year: 1998, order_priority: '2-HIGH',   total_price: 50.00}
+      - input: ref('slv_order_items')
+        rows:
+          - {order_key: 1, net_amount: 900.00, net_amount_with_tax: 945.00, quantity: 10}
+          - {order_key: 1, net_amount: 100.00, net_amount_with_tax: 105.00, quantity: 2}
+          # order 2 has NO line items -> rollups must coalesce to 0
+      - input: ref('dim_customers')
+        rows:
+          - {customer_key: 10, customer_name: 'Acme', market_segment: 'BUILDING', nation_name: 'CANADA', region_name: 'AMERICA'}
+    expect:
+      rows:
+        - {order_key: 1, line_item_count: 2, total_quantity: 12, net_revenue: 1000.00, net_revenue_with_tax: 1050.00, region_name: 'AMERICA'}
+        - {order_key: 2, line_item_count: 0, total_quantity: 0,  net_revenue: 0,       net_revenue_with_tax: 0,       region_name: 'AMERICA'}

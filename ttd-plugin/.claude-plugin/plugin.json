@@ -1,0 +1,12 @@
+{
+  "name": "ttd",
+  "version": "1.0.0",
+  "description": "Test-Then-Deploy hook for dbt + Snowflake medallion projects: an on-run-start coverage gate that blocks untested models, plus on-the-fly functional test stubs and runnable characterization unit tests.",
+  "author": {
+    "name": "KarthikValluri-ascendion"
+  },
+  "homepage": "https://github.com/KarthikValluri-ascendion/test_cases_dbt",
+  "repository": "https://github.com/KarthikValluri-ascendion/test_cases_dbt",
+  "license": "internal",
+  "keywords": ["dbt", "snowflake", "testing", "tdd", "medallion", "data-quality", "unit-tests"]
+}

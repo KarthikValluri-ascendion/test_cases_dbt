@@ -1,0 +1,18 @@
+version: 2
+
+sources:
+  - name: tpch
+    description: "Snowflake-provided TPC-H sample data (read-only share)."
+    database: SNOWFLAKE_SAMPLE_DATA
+    schema: TPCH_SF1
+    tables:
+      - name: customer
+        identifier: CUSTOMER
+      - name: orders
+        identifier: ORDERS
+      - name: lineitem
+        identifier: LINEITEM
+      - name: nation
+        identifier: NATION
+      - name: region
+        identifier: REGION

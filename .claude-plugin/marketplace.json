@@ -1,0 +1,17 @@
+{
+  "name": "claude-enterprise-standards",
+  "owner": {
+    "name": "KarthikValluri-ascendion"
+  },
+  "metadata": {
+    "description": "Ascendion enterprise Claude Code standards marketplace. Hosted in the test_cases_dbt repo.",
+    "version": "1.0.0"
+  },
+  "plugins": [
+    {
+      "name": "ttd",
+      "source": "./ttd-plugin",
+      "description": "Test-Then-Deploy for dbt + Snowflake medallion projects: a coverage gate that blocks untested models, plus on-the-fly functional test stubs and runnable characterization unit tests."
+    }
+  ]
+}
