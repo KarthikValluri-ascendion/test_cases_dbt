@@ -31,6 +31,7 @@ Or enable per-project in `.claude/settings.json`:
 | `/ttd:scaffold` | Generate functional (schema) test stubs for untested models (pre-build). |
 | `/ttd:gen-unit-tests [model ...]` | Generate runnable characterization unit tests (post-build). |
 | `/ttd:build` | Full cycle: scaffold → `dbt build` (gated) → generate unit tests → run them. |
+| `/ttd:dashboard` | Build the self-contained executive dashboard HTML + `artifacts/` library (coverage, gold KPIs, lineage, tokenomics). |
 | `/ttd:demo-reset` | Remove generated tests so the demo fixture is untested again (RED state). |
 
 All commands run against the **current dbt project** (the folder with `dbt_project.yml` +
@@ -44,6 +45,8 @@ All commands run against the **current dbt project** (the folder with `dbt_proje
    `_ttd_stub__*.yml` with `not_null`/`unique`.
 3. **Generate (unit)** — `assets/scripts/generate_unit_tests.py` samples real rows, runs the
    model's compiled SQL on them, and records the output as a runnable unit test (`_ttd_unit__*.yml`).
+4. **Dashboard** — `assets/scripts/build_dashboard.py` reads coverage + lineage from the manifest
+   and queries the gold layer live to emit a self-contained `artifacts/TTD_Exec_Dashboard.html`.
 
 `assets/scripts/ttd.py` orchestrates these; the plugin's skills wrap it.
 
