@@ -7,6 +7,7 @@ Commands:
   python ttd.py gen-unit-tests  generate runnable characterization unit tests (args: model names)
   python ttd.py build           scaffold -> dbt build -> gen unit tests for new models -> run them
   python ttd.py test            dbt test only
+  python ttd.py dashboard       build the self-contained executive dashboard HTML + artifacts library
   python ttd.py demo-reset      delete generated stubs + unit tests -> back to the demo's RED start
 
 Why a wrapper instead of a pure dbt run-hook?
@@ -30,6 +31,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent
 SCAFFOLDER = ROOT / "ttd" / "scaffold_tests.py"
 UNIT_GEN = ROOT / "ttd" / "generate_unit_tests.py"
+DASHBOARD = ROOT / "ttd" / "build_dashboard.py"
 
 
 def run(cmd: list[str]) -> int:
@@ -66,6 +68,15 @@ def gen_unit_tests(models: list[str], compile_first: bool = True) -> int:
         if rc:
             return rc
     return run([sys.executable, str(UNIT_GEN), *models])
+
+
+def dashboard(passthrough: list[str]) -> int:
+    """Build the executive dashboard. Needs a fresh manifest (parse) for coverage
+    + lineage, and the gold tables already built for the live business KPIs."""
+    rc = dbt("parse")
+    if rc:
+        return rc
+    return run([sys.executable, str(DASHBOARD), *passthrough])
 
 
 def demo_reset() -> int:
@@ -116,6 +127,8 @@ def main(argv: list[str]) -> int:
         return 0
     if cmd == "test":
         return dbt("test", *passthrough)
+    if cmd == "dashboard":
+        return dashboard(passthrough)
     if cmd == "demo-reset":
         return demo_reset()
 
